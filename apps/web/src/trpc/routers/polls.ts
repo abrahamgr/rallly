@@ -52,17 +52,26 @@ export const polls = router({
         status: z.enum(["live", "paused", "finalized"]).optional(),
         search: z.string().optional(),
         member: z.string().optional(),
+        topics: z.string().array().optional(),
         cursor: z.number().optional().default(1),
         limit: z.number().default(20),
       }),
     )
     .query(async ({ input }) => {
-      const { cursor: page, limit: pageSize, status, search, member } = input;
+      const {
+        cursor: page,
+        limit: pageSize,
+        status,
+        search,
+        member,
+        topics,
+      } = input;
 
       const result = await getPolls({
         status,
         q: search,
         member,
+        topics,
         page,
         pageSize,
       });
@@ -131,6 +140,7 @@ export const polls = router({
           id: true,
           title: true,
           location: true,
+          topics: true,
           timeZone: true,
           createdAt: true,
           status: true,
@@ -172,6 +182,7 @@ export const polls = router({
         timeZone: z.string().optional(),
         location: z.string().optional(),
         description: z.string().optional(),
+        topics: z.string().array().default([]),
         hideParticipants: z.boolean().optional(),
         hideScores: z.boolean().optional(),
         disableComments: z.boolean().optional(),
@@ -240,6 +251,7 @@ export const polls = router({
           timeZone: input.timeZone,
           location: input.location,
           description: input.description,
+          topics: input.topics,
           adminUrlId: adminToken,
           participantUrlId,
           ...(ctx.user.isGuest
@@ -329,6 +341,7 @@ export const polls = router({
         timeZone: z.string().optional(),
         location: z.string().optional(),
         description: z.string().optional(),
+        topics: z.string().array().optional(),
         optionsToDelete: z.string().array().optional(),
         optionsToAdd: z.string().array().optional(),
         hideParticipants: z.boolean().optional(),
@@ -408,6 +421,7 @@ export const polls = router({
           title: input.title,
           location: input.location,
           description: input.description,
+          topics: input.topics,
           timeZone: input.timeZone,
           hideScores: input.hideScores,
           hideParticipants: input.hideParticipants,
@@ -425,6 +439,7 @@ export const polls = router({
           createdAt: true,
           location: true,
           description: true,
+          topics: true,
           disableComments: true,
           requireParticipantEmail: true,
           hideParticipants: true,
@@ -603,6 +618,7 @@ export const polls = router({
           title: true,
           location: true,
           description: true,
+          topics: true,
           createdAt: true,
           adminUrlId: true,
           participantUrlId: true,

@@ -9,12 +9,14 @@ type PollFilters = {
   pageSize?: number;
   q?: string;
   member?: string;
+  topics?: string[];
 };
 
 export const getPolls = async ({
   status,
   q,
   member,
+  topics,
   page = 1,
   pageSize = 20,
 }: PollFilters) => {
@@ -25,8 +27,19 @@ export const getPolls = async ({
     spaceId: space.id,
     deletedAt: null,
     ...(status && { status }),
-    ...(q && { title: { contains: q, mode: "insensitive" } }),
+    ...(q && {
+      OR: [
+        { title: { contains: q, mode: "insensitive" } },
+        { topics: { hasSome: [q] } },
+      ],
+    }),
     ...(member && { userId: member }),
+    ...(topics &&
+      topics.length > 0 && {
+        topics: {
+          hasSome: topics,
+        },
+      }),
   };
 
   // Get total count and paginated polls in a transaction
@@ -38,6 +51,7 @@ export const getPolls = async ({
         id: true,
         title: true,
         status: true,
+        topics: true,
         createdAt: true,
         updatedAt: true,
         user: {
@@ -72,6 +86,7 @@ export const getPolls = async ({
     id: poll.id,
     title: poll.title,
     status: poll.status,
+    topics: poll.topics,
     createdAt: poll.createdAt,
     updatedAt: poll.updatedAt,
     user: poll.user

@@ -13,6 +13,7 @@ interface PollsInfiniteListProps {
   status?: PollStatus;
   search?: string;
   member?: string;
+  topics?: string[];
   emptyState: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ export function PollsInfiniteList({
   status,
   search,
   member,
+  topics,
   emptyState,
 }: PollsInfiniteListProps) {
   const {
@@ -34,6 +36,7 @@ export function PollsInfiniteList({
       status,
       search,
       member,
+      topics,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -96,6 +99,7 @@ export function PollsInfiniteList({
           key={poll.id}
           title={poll.title}
           status={poll.status}
+          topics={poll.topics}
           participants={poll.participants.map((participant) => ({
             id: participant.id,
             name: participant.name,

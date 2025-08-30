@@ -1,11 +1,19 @@
+import { Form } from "@rallly/ui/form";
 import type { RenderOptions, RenderResult } from "@testing-library/react";
-import { render as rtlRender } from "@testing-library/react";
+import { render as rtlRender, waitFor } from "@testing-library/react";
 import { createInstance } from "i18next";
 import ICU from "i18next-icu";
 import resourcesToBackend from "i18next-resources-to-backend";
 import type { ReactElement } from "react";
+import type {
+  DefaultValues,
+  FieldValues,
+  Path,
+  SubmitHandler,
+  UseFormReturn,
+} from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { I18nextProvider, initReactI18next } from "react-i18next";
-
 import { defaultNS, getOptions } from "@/i18n/settings";
 
 interface TestWrapperProps {
@@ -57,8 +65,69 @@ function render(
   });
 }
 
+interface RenderWIthFormOptions<T> {
+  defaultValues?: DefaultValues<T>;
+  onSubmit?: SubmitHandler<T>;
+}
+
+function renderWithForm<T extends FieldValues>(
+  ui: React.ReactElement,
+  options?: RenderWIthFormOptions<T>,
+) {
+  let formInstance: UseFormReturn<T>;
+
+  const { onSubmit, defaultValues } = options || {};
+
+  const FormWrapper = ({ children }: { children: React.ReactNode }) => {
+    const form = useForm<T>({
+      defaultValues,
+    });
+
+    formInstance = form;
+
+    return (
+      <TestWrapper locale="en">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit ?? vi.fn())}>
+            {children}
+            <button type="submit" data-testid="submit-button">
+              Submit
+            </button>
+          </form>
+        </Form>
+      </TestWrapper>
+    );
+  };
+
+  const result = render(ui, {
+    wrapper: FormWrapper,
+  });
+
+  return {
+    ...result,
+    // biome-ignore lint/style/noNonNullAssertion: it always will have a value
+    form: formInstance!,
+    // Helper methods for common testing patterns
+    getFieldValue: (name: Path<T>) => formInstance?.getValues(name),
+    getAllValues: () => formInstance?.getValues(),
+    waitForFormValue: async (
+      name: Path<T>,
+      value: string | string[] | undefined,
+    ) => {
+      await waitFor(() => {
+        const formValue = formInstance?.getValues(name);
+        if (Array.isArray(value)) {
+          expect(formValue).toStrictEqual(value);
+        } else {
+          expect(formValue).toBe(value);
+        }
+      });
+    },
+  };
+}
+
 // Re-export everything from testing-library
 export * from "@testing-library/react";
 
 // Override render export
-export { render };
+export { render, TestWrapper, renderWithForm };

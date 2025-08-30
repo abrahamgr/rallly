@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { OptimizedAvatarImage } from "@/components/optimized-avatar-image";
 import { StackedList, StackedListItem } from "@/components/stacked-list";
+import { TopicsDisplay } from "@/components/topics-display";
 import { Trans } from "@/components/trans";
 import { PollStatusIcon } from "@/features/poll/components/poll-status-icon";
 
@@ -13,29 +14,47 @@ export const PollList = StackedList;
 export function PollListItem({
   title,
   status,
+  topics,
   participants,
   inviteLink,
   pollLink,
   createdBy,
+  onTopicClick,
 }: {
   title: string;
   status: PollStatus;
+  topics?: string[];
   participants: { id: string; name: string; image?: string }[];
   inviteLink: string;
   pollLink: string;
   createdBy?: { name: string; image?: string };
+  onTopicClick?: (topic: string) => void;
 }) {
   return (
     <StackedListItem>
       <div className="-m-4 relative flex min-w-0 flex-1 items-center gap-2 p-4">
         <PollStatusIcon status={status} showTooltip={false} />
-        <Link
-          className="min-w-0 text-sm hover:underline focus:ring-ring focus-visible:ring-2"
-          href={pollLink}
-        >
-          <span className="absolute inset-0" />
-          <span className="block truncate">{title}</span>
-        </Link>
+        <div className="min-w-0 flex-1">
+          <Link
+            className="text-sm hover:underline focus:ring-ring focus-visible:ring-2"
+            href={pollLink}
+          >
+            <span className="absolute inset-0" />
+            <span className="block truncate">{title}</span>
+          </Link>
+          {topics && topics.length > 0 && (
+            <div className="relative z-10 mt-1">
+              <TopicsDisplay
+                topics={topics}
+                variant="outline"
+                size="sm"
+                maxDisplay={3}
+                clickable={!!onTopicClick}
+                onTopicClick={onTopicClick}
+              />
+            </div>
+          )}
+        </div>
       </div>
       <div className="hidden items-center justify-end gap-4 sm:flex">
         {participants.length > 0 ? (

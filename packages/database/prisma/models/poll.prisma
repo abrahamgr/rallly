@@ -22,6 +22,7 @@ model Poll {
   title                   String
   description             String?
   location                String?
+  topics                  String[]   @default([])
   userId                  String?    @map("user_id")
   guestId                 String?    @map("guest_id")
   timeZone                String?    @map("time_zone")

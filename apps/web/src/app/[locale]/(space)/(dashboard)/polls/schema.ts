@@ -30,10 +30,25 @@ export const memberSchema = z
   .optional()
   .transform((val) => val?.trim() || undefined);
 
+export const topicsSchema = z
+  .union([z.string(), z.array(z.string())])
+  .optional()
+  .transform((val) => {
+    if (!val) return undefined;
+    if (typeof val === "string") {
+      return val
+        .split(",")
+        .map((topic) => topic.trim())
+        .filter(Boolean);
+    }
+    return val.filter(Boolean);
+  });
+
 export const searchParamsSchema = z.object({
   status: statusSchema,
   page: pageSchema,
   pageSize: pageSizeSchema,
   q: querySchema,
   member: memberSchema,
+  topics: topicsSchema,
 });

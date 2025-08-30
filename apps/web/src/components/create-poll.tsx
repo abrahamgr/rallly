@@ -44,6 +44,7 @@ export const CreatePoll: React.FunctionComponent = () => {
       title: "",
       description: "",
       location: "",
+      topics: [],
       view: "month",
       options: [],
       hideScores: false,
@@ -80,6 +81,7 @@ export const CreatePoll: React.FunctionComponent = () => {
               title: title,
               location: formData?.location,
               description: formData?.description,
+              topics: formData?.topics || [],
               timeZone: formData?.timeZone,
               hideParticipants: formData?.hideParticipants,
               disableComments: formData?.disableComments,
@@ -121,6 +123,7 @@ export const CreatePoll: React.FunctionComponent = () => {
           <PollSettingsForm />
           <hr />
           <Button
+            data-testid="submit-button"
             loading={createPoll.isPending || createPoll.isSuccess}
             size="lg"
             type="submit"

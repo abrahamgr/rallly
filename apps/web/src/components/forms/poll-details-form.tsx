@@ -6,13 +6,14 @@ import { useFormContext } from "react-hook-form";
 import { Trans } from "@/components/trans";
 import { useTranslation } from "@/i18n/client";
 import { useFormValidation } from "@/utils/form-validation";
-
+import { TopicsInput } from "./topics-input";
 import type { NewEventData } from "./types";
 
 export interface PollDetailsData {
   title: string;
   location: string;
   description: string;
+  topics: string[];
 }
 
 export const PollDetailsForm = () => {
@@ -41,6 +42,7 @@ export const PollDetailsForm = () => {
               type="text"
               error={!!errors.title}
               id="title"
+              data-testid="title-input"
               className="w-full"
               placeholder={t("titlePlaceholder")}
             />
@@ -61,6 +63,7 @@ export const PollDetailsForm = () => {
         <Input
           type="text"
           id="location"
+          data-testid="location-input"
           className="w-full"
           placeholder={t("locationPlaceholder")}
           {...register("location")}
@@ -78,11 +81,17 @@ export const PollDetailsForm = () => {
         <Textarea
           className="w-full"
           id="description"
+          data-testid="description-input"
           placeholder={t("descriptionPlaceholder")}
           rows={5}
           {...register("description")}
         />
       </FormItem>
+      <TopicsInput
+        name="topics"
+        label={t("topics")}
+        placeholder={t("topicsPlaceholder")}
+      />
     </div>
   );
 };

@@ -37,6 +37,7 @@ const Page = () => {
       title: poll.title,
       location: poll.location ?? "",
       description: poll.description ?? "",
+      topics: poll.topics ?? [],
     },
   });
 
@@ -72,7 +73,12 @@ const Page = () => {
                 <Trans i18nKey="cancel" />
               </Link>
             </Button>
-            <Button type="submit" loading={isUpdating} variant="primary">
+            <Button
+              type="submit"
+              loading={isUpdating}
+              variant="primary"
+              data-testid="submit-button"
+            >
               <Trans i18nKey="save" />
             </Button>
           </CardFooter>

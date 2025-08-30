@@ -28,15 +28,18 @@ import { loadMembers } from "@/features/space/data";
 import { getTranslation } from "@/i18n/server";
 import { createSSRHelper } from "@/trpc/server/create-ssr-helper";
 import { searchParamsSchema } from "./schema";
+import { TopicsFilterWrapper } from "./topics-filter-wrapper";
 
 async function loadData({
   status,
   q,
   member,
+  topics,
 }: {
   status?: PollStatus;
   q?: string;
   member?: string;
+  topics?: string[];
 }) {
   const helpers = await createSSRHelper();
 
@@ -46,6 +49,7 @@ async function loadData({
       status,
       search: q,
       member,
+      topics,
     }),
   ]);
 
@@ -96,12 +100,13 @@ export default async function Page(props: {
   const { t } = await getTranslation();
 
   const searchParams = await props.searchParams;
-  const { status, q, member } = searchParamsSchema.parse(searchParams);
+  const { status, q, member, topics } = searchParamsSchema.parse(searchParams);
 
   const { members, dehydratedState } = await loadData({
     status,
     q,
     member,
+    topics,
   });
 
   return (
@@ -123,18 +128,27 @@ export default async function Page(props: {
         </PageHeader>
         <PageContent>
           <PollsTabbedView>
-            <div className="mb-6 flex gap-x-2">
-              <SearchInput
-                placeholder={t("searchPollsPlaceholder", {
-                  defaultValue: "Search polls by title...",
+            <div className="mb-6 space-y-4">
+              <div className="flex gap-x-2">
+                <SearchInput
+                  placeholder={t("searchPollsPlaceholder", {
+                    defaultValue: "Search polls by title...",
+                  })}
+                />
+                <MemberSelector members={members.data} />
+              </div>
+              <TopicsFilterWrapper
+                selectedTopics={topics}
+                placeholder={t("filterByTopics", {
+                  defaultValue: "Filter by topics",
                 })}
               />
-              <MemberSelector members={members.data} />
             </div>
             <PollsInfiniteList
               status={status}
               search={q}
               member={member}
+              topics={topics}
               emptyState={<PollsEmptyState />}
             />
           </PollsTabbedView>

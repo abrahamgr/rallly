@@ -8,6 +8,7 @@ import TruncatedLinkify from "@/components/poll/truncated-linkify";
 import VoteIcon from "@/components/poll/vote-icon";
 import { PollStatusBadge } from "@/components/poll-status";
 import { RandomGradientBar } from "@/components/random-gradient-bar";
+import { TopicsDisplay } from "@/components/topics-display";
 import { Trans } from "@/components/trans";
 import { usePoll } from "@/contexts/poll";
 import { useTranslation } from "@/i18n/client";
@@ -40,7 +41,7 @@ export function EventCard() {
         <RandomGradientBar seed={poll.id} />
         <CardContent className="space-y-4 sm:space-y-6">
           <div className="flex flex-col items-start gap-4 lg:flex-row lg:justify-between">
-            <div>
+            <div className="space-y-2">
               <h1 data-testid="poll-title" className="font-semibold text-lg">
                 {poll.title}
               </h1>
@@ -68,6 +69,16 @@ export function EventCard() {
                   </span>
                 </span>
               </CardDescription>
+              {poll.topics && poll.topics.length > 0 && (
+                <div>
+                  <TopicsDisplay
+                    topics={poll.topics}
+                    variant="secondary"
+                    size="sm"
+                    maxDisplay={5}
+                  />
+                </div>
+              )}
             </div>
             <PollStatusBadge status={poll.status} />
           </div>
